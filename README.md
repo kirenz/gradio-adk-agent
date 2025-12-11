@@ -232,9 +232,9 @@ You can extend the pipeline by adding more agents to the `sub_agents` list in th
 ### Sequential Agent Execution
 The pipeline uses ADK's `SequentialAgent` to ensure agents execute in order:
 1. User submits a request
-2. Code Writer generates initial code � stored in `generated_code`
-3. Code Reviewer analyzes the code � stored in `review_comments`
-4. Code Refactorer improves the code � stored in `refactored_code`
+2. Code Writer generates initial code (stored in `generated_code`)
+3. Code Reviewer analyzes the code (stored in `review_comments`)
+4. Code Refactorer improves the code (stored in `refactored_code`)
 
 ### Asynchronous Processing
 The application uses async/await to handle agent execution:
