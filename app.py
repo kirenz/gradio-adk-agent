@@ -82,47 +82,47 @@ with gr.Blocks(title="Google ADK Code Pipeline") as demo:
     gr.Markdown("""
     # Google ADK Code Pipeline
 
-    Diese Pipeline verarbeitet deine Anfrage durch drei spezialisierte Agenten:
-    1. **Code Writer** - Generiert initial Python Code
-    2. **Code Reviewer** - Überprüft den Code und gibt Feedback
-    3. **Code Refactorer** - Verbessert den Code basierend auf dem Feedback
+    This pipeline processes your request through three specialized agents:
+    1. **Code Writer** - Generates initial Python code
+    2. **Code Reviewer** - Reviews the code and provides feedback
+    3. **Code Refactorer** - Improves the code based on the feedback
 
-    Gib eine Beschreibung ein, was du programmiert haben möchtest.
+    Enter a description of what you want to have programmed.
     """)
 
     with gr.Row():
         user_input = gr.Textbox(
-            label="Deine Anfrage",
-            placeholder="z.B. 'Write a function to calculate fibonacci numbers'",
+            label="Your Request",
+            placeholder="e.g., 'Write a function to calculate fibonacci numbers'",
             lines=3
         )
 
     with gr.Row():
-        submit_btn = gr.Button("Pipeline starten", variant="primary")
-        clear_btn = gr.Button("Löschen")
+        submit_btn = gr.Button("Start Pipeline", variant="primary")
+        clear_btn = gr.Button("Clear")
 
-    gr.Markdown("## Output der drei Agenten")
+    gr.Markdown("## Output of the Three Agents")
 
     with gr.Row():
         with gr.Column():
             gr.Markdown("### 1️⃣ Code Writer Output")
             code_writer_output = gr.Markdown(
                 label="Generated Code",
-                value="*Warte auf Input...*"
+                value="*Waiting for input...*"
             )
 
         with gr.Column():
             gr.Markdown("### 2️⃣ Code Reviewer Output")
             code_reviewer_output = gr.Markdown(
                 label="Review Comments",
-                value="*Warte auf Input...*"
+                value="*Waiting for input...*"
             )
 
         with gr.Column():
             gr.Markdown("### 3️⃣ Code Refactorer Output")
             code_refactorer_output = gr.Markdown(
                 label="Refactored Code",
-                value="*Warte auf Input...*"
+                value="*Waiting for input...*"
             )
 
     # Examples
@@ -144,7 +144,7 @@ with gr.Blocks(title="Google ADK Code Pipeline") as demo:
     )
 
     clear_btn.click(
-        fn=lambda: ("", "*Warte auf Input...*", "*Warte auf Input...*", "*Warte auf Input...*"),
+        fn=lambda: ("", "*Waiting for input...*", "*Waiting for input...*", "*Waiting for input...*"),
         inputs=None,
         outputs=[user_input, code_writer_output, code_reviewer_output, code_refactorer_output]
     )
