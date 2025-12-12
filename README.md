@@ -50,6 +50,9 @@ graph TB
 
 In this tutorial, you will:
 - Build a multi-agent BI system using Google ADK's **SequentialAgent** pattern
+- Apply the **COMPASS framework** for production-ready prompt engineering
+- Implement **Chain of Thought** reasoning to reduce AI hallucinations
+- Use **XML tags** and **few-shot examples** for reliable agent behavior
 - Connect to Microsoft SQL Server databases with SQLAlchemy
 - Generate SQL queries from natural language using AI
 - Execute queries safely with validation and error handling
@@ -240,6 +243,159 @@ insights = await call_agent_async(insight_runner, insight_prompt)
 # 5. Display: SQL, Data Table, Chart, Explanation
 ```
 
+## Prompt Engineering with COMPASS
+
+All agent prompts in this project follow the **COMPASS framework** - a structured approach to building reliable, production-ready AI agents. This ensures consistent behavior, reduces hallucinations, and makes the prompts maintainable.
+
+### The 3 Pillars of Agentic Prompts
+
+Each agent implements three core techniques:
+
+#### 1. **Structure (XML Tags)**
+Clear separation between instructions and data using XML tags prevents instruction injection and ambiguity:
+
+```xml
+<system_prompt>
+  ## Context
+  ## Objective
+  ...
+</system_prompt>
+
+<instructions>
+  <thinking_process>
+    1. Step one
+    2. Step two
+  </thinking_process>
+</instructions>
+
+<examples>
+  <example>
+    <input>...</input>
+    <output>...</output>
+  </example>
+</examples>
+```
+
+#### 2. **Reasoning (Chain of Thought)**
+Each agent follows an explicit thinking process before generating output, dramatically improving accuracy:
+
+```xml
+<thinking_process>
+1. Identify the user's question and extract key entities
+2. Map the question to relevant tables and columns
+3. Determine if JOINs are needed
+4. Determine if aggregation is needed
+5. Construct the SQL query using proper syntax
+</thinking_process>
+```
+
+This forces the model to generate logical intermediate steps, reducing errors and hallucinations.
+
+#### 3. **Examples (Few-Shot Prompting)**
+Multiple examples demonstrate expected behavior more effectively than lengthy instructions:
+
+```xml
+<examples>
+  <example>
+    <input>
+      Schema: Products (Product_ID, Product_Name, Price)
+      Question: "What are the top 5 products by price?"
+    </input>
+    <output>SELECT TOP 5 Product_Name, Price FROM Products ORDER BY Price DESC</output>
+  </example>
+</examples>
+```
+
+### COMPASS Framework Components
+
+Each agent prompt is structured using all seven COMPASS components:
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **Context** | The agent's environment and available tools | "You are operating in a Business Intelligence environment with access to a Microsoft SQL Server database." |
+| **Objective** | The primary goal and success criteria | "Generate accurate SQL SELECT queries. Success = (1) syntactically correct, (2) schema-valid, (3) logically answers question." |
+| **Mode** | The persona and expertise level | "Act as a Senior Database Engineer with 10+ years of experience writing optimized SQL queries." |
+| **People of Interest** | The target audience | "Your queries will be executed for business analysts and non-technical stakeholders." |
+| **Attitude** | Tone and behavioral guidelines | "Be precise and methodical. Never guess table names - use only what exists in the schema." |
+| **Style** | Output format and structure | "Output ONLY raw SQL. No markdown, no explanations, no semicolons." |
+| **Specifications** | Hard constraints and rules | "NEVER use INSERT/UPDATE/DELETE. NEVER include code fences." |
+
+### Agent Prompt Examples
+
+#### Text-to-SQL Agent
+```python
+instruction="""
+<system_prompt>
+## Context
+You are operating in a Business Intelligence environment...
+
+## Objective
+Generate accurate, efficient SQL SELECT queries...
+
+## Mode
+Act as a Senior Database Engineer...
+
+## People of Interest
+Your queries will be executed by a BI system...
+
+## Attitude
+Be precise and methodical. Never guess...
+
+## Style
+Output ONLY the raw SQL query as plain text...
+
+## Specifications
+HARD CONSTRAINTS:
+1. Use ONLY SELECT statements
+2. Reference ONLY tables in the schema
+...
+</system_prompt>
+
+<instructions>
+<thinking_process>
+1. Identify the user's question
+2. Map to relevant tables
+3. Determine if JOINs needed
+...
+</thinking_process>
+</instructions>
+
+<examples>
+  <example>...</example>
+</examples>
+"""
+```
+
+### Benefits of COMPASS
+
+- **Reliability**: Chain of Thought reduces hallucinations by 40-60%
+- **Security**: XML structure prevents prompt injection attacks
+- **Consistency**: Few-shot examples ensure predictable outputs
+- **Maintainability**: Clear structure makes updates straightforward
+- **Debuggability**: Easy to identify which component needs adjustment
+
+### Customizing Prompts
+
+When modifying agent behavior, edit the appropriate COMPASS section:
+
+**To change output quality:**
+- Adjust **Objective** (success criteria)
+- Add more **Examples** (few-shot learning)
+
+**To prevent errors:**
+- Update **Specifications** (hard constraints)
+- Refine **Thinking Process** (reasoning steps)
+
+**To change tone/style:**
+- Modify **Attitude** (behavioral guidelines)
+- Update **Style** (format requirements)
+
+**To add domain knowledge:**
+- Enhance **Context** (environment details)
+- Adjust **Mode** (expertise level)
+
+See [agents.py](agents.py) for complete prompt implementations.
+
 ## Run the Application
 
 1. Start the application from the project root directory:
@@ -291,39 +447,41 @@ GEMINI_MODEL = "gemini-2.5-pro"    # More capable, slower
 
 ### Customize Agent Instructions
 
-Edit agent instructions to change behavior:
+All agent prompts follow the **COMPASS framework** (see [Prompt Engineering with COMPASS](#prompt-engineering-with-compass)). To customize agent behavior, edit the appropriate section in [agents.py](agents.py):
 
-**Text-to-SQL Agent**: Add database-specific guidelines
+**Text-to-SQL Agent**: Add database-specific guidelines to `Specifications`
 ```python
-instruction="""
-...
-- Always use the dbo schema
-- Prefer column aliases for readability
-- Use ISNULL for null handling
-...
-"""
+## Specifications
+HARD CONSTRAINTS:
+1. Use ONLY SELECT statements
+2. Always use the dbo schema
+3. Prefer column aliases for readability
+4. Use ISNULL for null handling
 ```
 
-**Visualization Agent**: Specify chart preferences
+**Visualization Agent**: Specify chart preferences in `Style` or `Specifications`
 ```python
-instruction="""
+## Specifications
+HARD CONSTRAINTS:
 ...
-- Use color scheme: category20
-- Always add tooltips
-- Make charts interactive
-...
-"""
+5. Use color scheme: category20
+6. Always add tooltips for interactivity
+7. Chart dimensions: width=400-600, height=300-400
 ```
 
-**Explanation Agent**: Adjust tone and detail level
+**Explanation Agent**: Adjust tone in `Attitude` and detail level in `Specifications`
 ```python
-instruction="""
-...
-- Focus on business implications
-- Include percentage changes when relevant
-- Highlight anomalies or trends
-...
-"""
+## Attitude
+Be direct and insight-focused.
+Focus on business implications and actionable insights.
+Include percentage changes when relevant.
+Highlight anomalies or trends clearly.
+
+## Specifications
+HARD CONSTRAINTS:
+1. Write EXACTLY 2-4 sentences
+2. ALWAYS include specific numbers
+3. Mention trends or anomalies when present
 ```
 
 ### Connect to Different Databases
