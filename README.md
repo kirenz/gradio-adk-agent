@@ -15,14 +15,14 @@ The system converts natural language questions into SQL queries, executes them a
 graph TB
     A[User Question] --> B[Text-to-SQL Agent]
     B -->|SQL Query| C[BI Service]
+    B -->|SQL Query| H[Gradio UI]
     C -->|Database Connection| D[(MS SQL Server)]
     D -->|Query Results| C
     C -->|DataFrame| E[Insight Pipeline]
     E --> F[Visualization Agent]
     E --> G[Explanation Agent]
-    F -->|Altair Chart| H[Gradio UI]
+    F -->|Altair Chart| H
     G -->|Business Insights| H
-    C -->|SQL & Data| H
 
     style A fill:#e1f5ff
     style B fill:#fff4e1
