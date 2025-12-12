@@ -46,6 +46,17 @@ graph TB
     end
 ```
 
+### How it works
+
+1. **User Question** enters the system and is processed by the **Text-to-SQL Agent**, which generates a SQL query
+2. The **SQL query** is sent to both the **BI Service** (for execution) and the **Gradio UI** (for display)
+3. The **BI Service** connects to the **MS SQL Server** database, executes the query, and receives results
+4. Query results are formatted as a **DataFrame** and sent to the **Insight Pipeline**
+5. The **Insight Pipeline** coordinates two specialized agents:
+   - **Visualization Agent** creates an Altair chart
+   - **Explanation Agent** generates business insights
+6. All outputs (SQL query, chart, and insights) are displayed in the **Gradio UI**
+
 ## What You'll Learn
 
 In this tutorial, you will:
